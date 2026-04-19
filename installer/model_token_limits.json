@@ -1,0 +1,550 @@
+{
+  "default": 4096,
+  "rules": [
+    {
+      "type": "prefix",
+      "value": "gpt-5-nano",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-5-mini",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-5",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4.1-nano",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4.1-mini",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4.1-realtime",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4.1-preview",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4.1",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-mini-translate",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-mini-transcribe",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-mini-audio",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-mini",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-realtime-preview",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-realtime",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o-audio-preview",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4o",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4-turbo-preview",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-4-turbo",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-3.5-turbo-16k",
+      "tokens": 16384
+    },
+    {
+      "type": "prefix",
+      "value": "gpt-3.5-turbo",
+      "tokens": 4096
+    },
+    {
+      "type": "prefix",
+      "value": "o4-mini",
+      "tokens": 64000
+    },
+    {
+      "type": "prefix",
+      "value": "o3-mini",
+      "tokens": 64000
+    },
+    {
+      "type": "prefix",
+      "value": "o1-preview",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "o1-mini",
+      "tokens": 64000
+    },
+    {
+      "type": "prefix",
+      "value": "o1",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "glm-4-plus",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "glm-4-air",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "glm-4",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "glm-3",
+      "tokens": 32000
+    },
+    {
+      "type": "prefix",
+      "value": "claude-3.5-sonnet",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "claude-3.5-haiku",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "claude-3-opus",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "claude-3-sonnet",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "claude-3-haiku",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "claude-2.1",
+      "tokens": 200000
+    },
+    {
+      "type": "prefix",
+      "value": "gemini-1.5-pro",
+      "tokens": 1000000
+    },
+    {
+      "type": "prefix",
+      "value": "gemini-1.5-flash-8b",
+      "tokens": 1000000
+    },
+    {
+      "type": "prefix",
+      "value": "gemini-1.5-flash",
+      "tokens": 1000000
+    },
+    {
+      "type": "prefix",
+      "value": "gemini-1.0-pro",
+      "tokens": 32000
+    },
+    {
+      "type": "prefix",
+      "value": "gemini-1.0",
+      "tokens": 32000
+    },
+    {
+      "type": "prefix",
+      "value": "gemini-pro",
+      "tokens": 32000
+    },
+    {
+      "type": "prefix",
+      "value": "deepseek-r1",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "deepseek-chat",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "deepseek-v3",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "qwen2.5",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "qwen2",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "qwen1.5",
+      "tokens": 65536
+    },
+    {
+      "type": "prefix",
+      "value": "qwen",
+      "tokens": 32768
+    },
+    {
+      "type": "prefix",
+      "value": "yi-1.5",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "yi-large",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "yi-34b",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "yi-9b",
+      "tokens": 65536
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3.2",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3.1-405b",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3.1-70b",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3.1-8b",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3.1",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3-70b",
+      "tokens": 8192
+    },
+    {
+      "type": "prefix",
+      "value": "llama-3-8b",
+      "tokens": 8192
+    },
+    {
+      "type": "prefix",
+      "value": "llama-2",
+      "tokens": 4096
+    },
+    {
+      "type": "prefix",
+      "value": "mixtral-8x22b",
+      "tokens": 65536
+    },
+    {
+      "type": "prefix",
+      "value": "mixtral-8x7b",
+      "tokens": 32768
+    },
+    {
+      "type": "prefix",
+      "value": "mistral-large",
+      "tokens": 32000
+    },
+    {
+      "type": "prefix",
+      "value": "mistral-medium",
+      "tokens": 32000
+    },
+    {
+      "type": "prefix",
+      "value": "mistral-small",
+      "tokens": 16000
+    },
+    {
+      "type": "prefix",
+      "value": "phi-3.5",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "phi-3",
+      "tokens": 128000
+    },
+    {
+      "type": "prefix",
+      "value": "grok-2",
+      "tokens": 131072
+    },
+    {
+      "type": "prefix",
+      "value": "grok-1.5",
+      "tokens": 131072
+    },
+    {
+      "type": "contains",
+      "value": "1000k",
+      "tokens": 1000000
+    },
+    {
+      "type": "contains",
+      "value": "1m",
+      "tokens": 1000000
+    },
+    {
+      "type": "contains",
+      "value": "512k",
+      "tokens": 524288
+    },
+    {
+      "type": "contains",
+      "value": "320k",
+      "tokens": 320000
+    },
+    {
+      "type": "contains",
+      "value": "256k",
+      "tokens": 256000
+    },
+    {
+      "type": "contains",
+      "value": "200k",
+      "tokens": 200000
+    },
+    {
+      "type": "contains",
+      "value": "160k",
+      "tokens": 160000
+    },
+    {
+      "type": "contains",
+      "value": "131k",
+      "tokens": 131072
+    },
+    {
+      "type": "contains",
+      "value": "130k",
+      "tokens": 131072
+    },
+    {
+      "type": "contains",
+      "value": "128k",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "100k",
+      "tokens": 100000
+    },
+    {
+      "type": "contains",
+      "value": "80k",
+      "tokens": 80000
+    },
+    {
+      "type": "contains",
+      "value": "65k",
+      "tokens": 65000
+    },
+    {
+      "type": "contains",
+      "value": "64k",
+      "tokens": 64000
+    },
+    {
+      "type": "contains",
+      "value": "40k",
+      "tokens": 40000
+    },
+    {
+      "type": "contains",
+      "value": "32k",
+      "tokens": 32768
+    },
+    {
+      "type": "contains",
+      "value": "16k",
+      "tokens": 16384
+    },
+    {
+      "type": "contains",
+      "value": "8k",
+      "tokens": 8192
+    },
+    {
+      "type": "contains",
+      "value": "4k",
+      "tokens": 4096
+    },
+    {
+      "type": "contains",
+      "value": "flash",
+      "tokens": 1000000
+    },
+    {
+      "type": "contains",
+      "value": "deepseek",
+      "tokens": 131072
+    },
+    {
+      "type": "contains",
+      "value": "grok",
+      "tokens": 131072
+    },
+    {
+      "type": "contains",
+      "value": "yi",
+      "tokens": 131072
+    },
+    {
+      "type": "contains",
+      "value": "phi-3",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "phi",
+      "tokens": 8192
+    },
+    {
+      "type": "contains",
+      "value": "llama-3.2",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "llama-3.1",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "llama-3",
+      "tokens": 8192
+    },
+    {
+      "type": "contains",
+      "value": "llama-2",
+      "tokens": 4096
+    },
+    {
+      "type": "contains",
+      "value": "claude",
+      "tokens": 200000
+    },
+    {
+      "type": "contains",
+      "value": "gemini",
+      "tokens": 32000
+    },
+    {
+      "type": "contains",
+      "value": "nano",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "mini",
+      "tokens": 64000
+    },
+    {
+      "type": "contains",
+      "value": "sonnet",
+      "tokens": 200000
+    },
+    {
+      "type": "contains",
+      "value": "haiku",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "opus",
+      "tokens": 200000
+    },
+    {
+      "type": "contains",
+      "value": "qwen",
+      "tokens": 32768
+    },
+    {
+      "type": "contains",
+      "value": "glm",
+      "tokens": 128000
+    },
+    {
+      "type": "contains",
+      "value": "mistral",
+      "tokens": 32000
+    },
+    {
+      "type": "contains",
+      "value": "mixtral",
+      "tokens": 65536
+    }
+  ]
+}

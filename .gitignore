@@ -5,3 +5,5 @@ gha-creds-*.json
 .idea/
 __pycache__/
 *.pyc
+
+installer/generated
