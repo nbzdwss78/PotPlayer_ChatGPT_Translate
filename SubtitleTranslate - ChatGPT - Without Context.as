@@ -366,11 +366,11 @@ string ServerLogin(string User, string Pass) {
     string verifyHeaders = BuildAuthHeaders(Pass);
     string testSystemMsg = "You are a test assistant.";
     string testUserMsg = "Hello";
-    string escapedTestSystemMsg = JsonEscape(testSystemMsg);
-    string escapedTestUserMsg = JsonEscape(testUserMsg);
+    string escapedSystemMsg = JsonEscape(testSystemMsg);
+    string escapedUserMsg = JsonEscape(testUserMsg);
     string testRequestData = "{\"model\":\"" + userModel + "\"," 
-                             "\"messages\":[{\"role\":\"system\",\"content\":\"" + escapedTestSystemMsg + "\"}," 
-                             "{\"role\":\"user\",\"content\":\"" + escapedTestUserMsg + "\"}]}";
+                             "\"messages\":[{\"role\":\"system\",\"content\":\"" + escapedSystemMsg + "\"}," 
+                             "{\"role\":\"user\",\"content\":\"" + escapedUserMsg + "\"}]}";
     string testResponse = HostUrlGetString(apiUrlLocal, GPT_UserAgent, verifyHeaders, testRequestData);
     if (testResponse != "") {
         JsonReader testReader;
@@ -632,8 +632,8 @@ string Translate(string Text, string &in SrcLang, string &in DstLang) {
     string escapedUserMsg = JsonEscape(userMsg);
 
     string requestData = "{\"model\":\"" + GPT_selected_model + "\"," 
-                         "\"messages\":[{\"role\":\"system\",\"content\":\"" + escapedTestSystemMsg + "\"}," 
-                         "{\"role\":\"user\",\"content\":\"" + escapedTestUserMsg + "\"}]}";
+                         "\"messages\":[{\"role\":\"system\",\"content\":\"" + escapedSystemMsg + "\"}," 
+                         "{\"role\":\"user\",\"content\":\"" + escapedUserMsg + "\"}]}";
 
     string headers = BuildAuthHeaders(GPT_api_key);
     int delayInt = ParseInt(GPT_delay_ms);
