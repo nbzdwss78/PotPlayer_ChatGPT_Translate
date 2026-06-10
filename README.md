@@ -1,20 +1,17 @@
 ## 如果你只是想正常使用插件，请在这里下载：<a href="#fully-automatic-installation-recommended">Fully Automatic Installation</a>
 
 - 【PotPlayer AI 翻译插件安装教程 - 哔哩哔哩】 https://b23.tv/ntF2dxu
-<a id="readme-top"></a>
-
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![License][license-shield]][license-url]
-<div align="center">
-
-</div>
 <div align="right">
   <a href="https://github.com/Felix3322/PotPlayer_ChatGPT_Translate/blob/master/docs/readme_zh.md">简体中文</a> |
   <a href="https://github.com/Felix3322/PotPlayer_ChatGPT_Translate/blob/master/docs/readme_zh-tw.md">繁體中文</a> |
   <strong>English</strong>
 </div>
+<a id="readme-top"></a>
+<div align="center">
 
 <a href="https://doloffer.com/friend/Ag2kFHdx" target="_blank">
   <img width="500" alt="image" src="https://github.com/user-attachments/assets/92f77c88-68ba-42da-be7c-8dacdd3ca5cc" />
@@ -25,6 +22,7 @@
 主营 GPT、Claude 等 AI 服务会员正版订阅充值。  
 💰 使用折扣码：**AI8888**  
 🚀 极速发货，售后无忧。
+</div>
 
 <div align="center">
   <h1>PotPlayer_ChatGPT_Translate 🚀</h1>
