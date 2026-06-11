@@ -12,7 +12,7 @@ string GetTitle() {
 
 // The version number will be replaced during the installation process
 string GetVersion() {
-    return "1.9.2";
+    return "1.9.4";
 }
 
 string GetDesc() {
@@ -43,10 +43,10 @@ string GetLoginDesc() {
 }
 
 string GetUserText() {
-    return "{$CP949=모델 이름|API 주소|nullkey|지연(ms)|재시도 모드|캐시 모드 (현재: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_cache_mode + ")$}"
-         + "{$CP950=模型名稱|API 地址|nullkey|延遲ms|重試模式|快取模式 (目前: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_cache_mode + ")$}"
-         + "{$CP936=模型名称|API 地址|nullkey|延迟ms|重试模式|缓存模式 (目前: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_cache_mode + ")$}"
-         + "{$CP0=Model Name|API URL|nullkey|Delay ms|Retry mode|Cache mode|Retention|Gemini cached_content (Current: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_cache_mode + " | " + GPT_prompt_cache_retention + " | " + GPT_gemini_cached_content + ")$}";
+    return "{$CP949=모델 이름|API 주소|nullkey|지연(ms)|재시도 모드|문맥 자막 수|캐시 모드 (현재: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_subtitle_count + " | " + GPT_context_cache_mode + ")$}"
+         + "{$CP950=模型名稱|API 地址|nullkey|延遲ms|重試模式|上下文字幕條數|快取模式 (目前: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_subtitle_count + " | " + GPT_context_cache_mode + ")$}"
+         + "{$CP936=模型名称|API 地址|nullkey|延迟ms|重试模式|上下文字幕条数|缓存模式 (目前: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_subtitle_count + " | " + GPT_context_cache_mode + ")$}"
+         + "{$CP0=Model Name|API URL|nullkey|Delay ms|Retry mode|Context subtitle count|Cache mode|Retention|Gemini cached_content (Current: " + GPT_selected_model + " | " + GPT_apiUrl + " | " + GPT_delay_ms + " | " + GPT_retry_mode + " | " + GPT_context_subtitle_count + " | " + GPT_context_cache_mode + " | " + GPT_prompt_cache_retention + " | " + GPT_gemini_cached_content + ")$}";
 }
 
 string GetPasswordText() {
@@ -63,8 +63,7 @@ string GPT_pre_selected_model = "gpt-5-nano"; // will be replaced during install
 string GPT_pre_apiUrl = "https://api.openai.com/v1/chat/completions"; // will be replaced during installation
 string GPT_pre_delay_ms = "0"; // will be replaced during installation
 string GPT_pre_retry_mode = "0"; // will be replaced during installation
-string GPT_pre_context_token_budget = "6000"; // approx. tokens reserved for context (0 = auto)
-string GPT_pre_context_truncation_mode = "drop_oldest"; // drop_oldest | smart_trim
+string GPT_pre_context_subtitle_count = "3"; // number of previous subtitle entries used as context
 string GPT_pre_context_cache_mode = "off"; // auto | off
 string GPT_pre_prompt_cache_retention = ""; // ""(default), in-memory, 24h (OpenAI official only)
 string GPT_pre_gemini_cached_content = ""; // optional cachedContents/... name for Gemini OpenAI-compatible endpoint
@@ -80,8 +79,7 @@ string GPT_selected_model = GPT_pre_selected_model; // Default model
 string GPT_apiUrl = GPT_pre_apiUrl; // Default API URL
 string GPT_delay_ms = GPT_pre_delay_ms; // Request delay in ms
 string GPT_retry_mode = GPT_pre_retry_mode; // Auto retry mode
-string GPT_context_token_budget = GPT_pre_context_token_budget; // Approximate token budget for context
-string GPT_context_truncation_mode = GPT_pre_context_truncation_mode; // Truncation mode when context exceeds budget
+string GPT_context_subtitle_count = GPT_pre_context_subtitle_count; // Previous subtitle entries used as context
 string GPT_context_cache_mode = GPT_pre_context_cache_mode; // auto | off
 string GPT_prompt_cache_retention = GPT_pre_prompt_cache_retention; // "" | in-memory | 24h
 string GPT_gemini_cached_content = GPT_pre_gemini_cached_content; // cachedContents/... (optional)
@@ -129,8 +127,7 @@ void EnsureInstallerDefaultsPersisted() {
     EnsureConfigDefault("gpt_apiUrl", GPT_pre_apiUrl);
     EnsureConfigDefault("gpt_delay_ms", GPT_pre_delay_ms);
     EnsureConfigDefault("gpt_retry_mode", GPT_pre_retry_mode);
-    EnsureConfigDefault("gpt_context_token_budget", GPT_pre_context_token_budget);
-    EnsureConfigDefault("gpt_context_truncation_mode", GPT_pre_context_truncation_mode);
+    EnsureConfigDefault("gpt_context_subtitle_count", GPT_pre_context_subtitle_count);
     EnsureConfigDefault("gpt_context_cache_mode", GPT_pre_context_cache_mode);
     EnsureConfigDefault("gpt_prompt_cache_retention", GPT_pre_prompt_cache_retention);
     EnsureConfigDefault("gpt_gemini_cached_content", GPT_pre_gemini_cached_content);
@@ -145,8 +142,7 @@ void RefreshConfiguration() {
     GPT_apiUrl = LoadInstallerConfig("gpt_apiUrl", GPT_pre_apiUrl, "wc_apiUrl");
     GPT_delay_ms = LoadInstallerConfig("gpt_delay_ms", GPT_pre_delay_ms, "wc_delay_ms");
     GPT_retry_mode = LoadInstallerConfig("gpt_retry_mode", GPT_pre_retry_mode, "wc_retry_mode");
-    GPT_context_token_budget = LoadInstallerConfig("gpt_context_token_budget", GPT_pre_context_token_budget);
-    GPT_context_truncation_mode = LoadInstallerConfig("gpt_context_truncation_mode", GPT_pre_context_truncation_mode);
+    GPT_context_subtitle_count = LoadInstallerConfig("gpt_context_subtitle_count", GPT_pre_context_subtitle_count);
     GPT_context_cache_mode = NormalizeCacheMode(LoadInstallerConfig("gpt_context_cache_mode", GPT_pre_context_cache_mode));
     GPT_prompt_cache_retention = NormalizePromptCacheRetention(LoadInstallerConfig("gpt_prompt_cache_retention", GPT_pre_prompt_cache_retention));
     GPT_gemini_cached_content = LoadInstallerConfig("gpt_gemini_cached_content", GPT_pre_gemini_cached_content).Trim();
@@ -342,6 +338,7 @@ string ServerLogin(string User, string Pass) {
     bool allowNullApiKey = (Pass == "" || lowerPass == "nullkey");
     string delayToken = "";
     string retryToken = "";
+    string contextSubtitleCountToken = "";
     string cacheToken = "";
     string promptCacheRetentionToken = GPT_prompt_cache_retention;
     string geminiCachedContentToken = GPT_gemini_cached_content;
@@ -362,6 +359,12 @@ string ServerLogin(string User, string Pass) {
             delayToken = t;
         else if (lowered.length() >= 6 && lowered.substr(0,6) == "cache=")
             cacheToken = lowered.substr(6);
+        else if (lowered.length() >= 8 && lowered.substr(0,8) == "context=" && IsDigits(t.substr(8)))
+            contextSubtitleCountToken = t.substr(8);
+        else if (lowered.length() >= 13 && lowered.substr(0,13) == "contextlines=" && IsDigits(t.substr(13)))
+            contextSubtitleCountToken = t.substr(13);
+        else if (lowered.length() >= 15 && lowered.substr(0,15) == "subtitlecount=" && IsDigits(t.substr(15)))
+            contextSubtitleCountToken = t.substr(15);
         else if (lowered == "cacheauto" || lowered == "cacheon" || lowered == "cache")
             cacheToken = "auto";
         else if (lowered == "cacheoff" || lowered == "nocache")
@@ -395,6 +398,8 @@ string ServerLogin(string User, string Pass) {
         GPT_retry_mode = retryToken;
     if (delayToken != "")
         GPT_delay_ms = delayToken;
+    if (contextSubtitleCountToken != "")
+        GPT_context_subtitle_count = contextSubtitleCountToken;
     if (cacheToken != "")
         normalizedCacheMode = NormalizeCacheMode(cacheToken);
     else
@@ -461,6 +466,7 @@ string ServerLogin(string User, string Pass) {
                     HostSaveString("gpt_apiUrl", apiUrlLocal);
                     HostSaveString("gpt_delay_ms", GPT_delay_ms);
                     HostSaveString("gpt_retry_mode", GPT_retry_mode);
+                    HostSaveString("gpt_context_subtitle_count", GPT_context_subtitle_count);
                     GPT_context_cache_mode = normalizedCacheMode;
                     HostSaveString("gpt_context_cache_mode", GPT_context_cache_mode);
                     GPT_prompt_cache_retention = promptCacheRetentionToken;
@@ -512,6 +518,7 @@ string ServerLogin(string User, string Pass) {
                     HostSaveString("gpt_apiUrl", apiUrlLocal);
                     HostSaveString("gpt_delay_ms", GPT_delay_ms);
                     HostSaveString("gpt_retry_mode", GPT_retry_mode);
+                    HostSaveString("gpt_context_subtitle_count", GPT_context_subtitle_count);
                     GPT_context_cache_mode = normalizedCacheMode;
                     HostSaveString("gpt_context_cache_mode", GPT_context_cache_mode);
                     GPT_prompt_cache_retention = promptCacheRetentionToken;
@@ -589,8 +596,7 @@ void ServerLogout() {
     GPT_apiUrl = GPT_pre_apiUrl;
     GPT_delay_ms = GPT_pre_delay_ms;
     GPT_retry_mode = GPT_pre_retry_mode;
-    GPT_context_token_budget = GPT_pre_context_token_budget;
-    GPT_context_truncation_mode = GPT_pre_context_truncation_mode;
+    GPT_context_subtitle_count = GPT_pre_context_subtitle_count;
     GPT_context_cache_mode = GPT_pre_context_cache_mode;
     GPT_prompt_cache_retention = GPT_pre_prompt_cache_retention;
     GPT_gemini_cached_content = GPT_pre_gemini_cached_content;
@@ -602,8 +608,7 @@ void ServerLogout() {
     HostSaveString("gpt_apiUrl", GPT_apiUrl);
     HostSaveString("gpt_delay_ms", GPT_delay_ms);
     HostSaveString("gpt_retry_mode", GPT_retry_mode);
-    HostSaveString("gpt_context_token_budget", GPT_context_token_budget);
-    HostSaveString("gpt_context_truncation_mode", GPT_context_truncation_mode);
+    HostSaveString("gpt_context_subtitle_count", GPT_context_subtitle_count);
     HostSaveString("gpt_context_cache_mode", GPT_context_cache_mode);
     HostSaveString("gpt_prompt_cache_retention", GPT_prompt_cache_retention);
     HostSaveString("gpt_gemini_cached_content", GPT_gemini_cached_content);
@@ -676,56 +681,24 @@ string Translate(string Text, string &in SrcLang, string &in DstLang) {
 
     GPT_subtitleHistory.insertLast(Text);
 
-    int maxTokens = GetModelMaxTokens(GPT_selected_model);
-    int safeBudget = maxTokens - 1000;
-    if (safeBudget < 0)
-        safeBudget = maxTokens;
-    if (safeBudget < 0)
-        safeBudget = 0;
-
-    int configuredBudget = ParseInt(GPT_context_token_budget);
-    if (configuredBudget <= 0 || configuredBudget > safeBudget)
-        configuredBudget = safeBudget;
-
-    string truncMode = GPT_context_truncation_mode;
-    bool useSmartTrim = EqualsIgnoreCase(truncMode, "smart_trim");
-
-    int currentTokens = EstimateTokenCount(Text);
-    if (currentTokens < 0)
-        currentTokens = 0;
-    int availableForContext = safeBudget - currentTokens;
-    if (availableForContext < 0)
-        availableForContext = 0;
-    if (availableForContext > configuredBudget)
-        availableForContext = configuredBudget;
+    int maxContextLines = ParseInt(GPT_context_subtitle_count);
+    if (maxContextLines < 0)
+        maxContextLines = 0;
+    if (maxContextLines > 20)
+        maxContextLines = 20;
 
     array<string> contextSegments;
-    int usedContextTokens = 0;
+    int addedContextLines = 0;
+    string currentText = Text.Trim();
     int idx = int(GPT_subtitleHistory.length()) - 2;
-    while (idx >= 0 && usedContextTokens < availableForContext) {
-        string subtitle = GPT_subtitleHistory[idx];
-        int subtitleTokens = EstimateTokenCount(subtitle);
-        if (subtitleTokens <= 0) {
+    while (idx >= 0 && addedContextLines < maxContextLines) {
+        string subtitle = GPT_subtitleHistory[idx].Trim();
+        if (subtitle == "" || subtitle == currentText) {
             idx--;
             continue;
         }
-        if (usedContextTokens + subtitleTokens <= availableForContext) {
-            contextSegments.insertAt(0, subtitle);
-            usedContextTokens += subtitleTokens;
-        } else if (useSmartTrim) {
-            int remainingTokens = availableForContext - usedContextTokens;
-            if (remainingTokens > 0) {
-                int charBudget = remainingTokens * 4;
-                int subtitleLength = int(subtitle.length());
-                if (charBudget < subtitleLength)
-                    subtitle = subtitle.substr(subtitleLength - charBudget, charBudget);
-                contextSegments.insertAt(0, subtitle);
-            }
-            usedContextTokens = availableForContext;
-            break;
-        } else {
-            break;
-        }
+        contextSegments.insertAt(0, subtitle);
+        addedContextLines++;
         idx--;
     }
 
@@ -736,19 +709,12 @@ string Translate(string Text, string &in SrcLang, string &in DstLang) {
         context += contextSegments[ctxIndex];
     }
 
-    int historyBudget = configuredBudget;
-    if (historyBudget <= 0)
-        historyBudget = safeBudget;
-    if (historyBudget < 0)
-        historyBudget = 0;
-    int historyTarget = historyBudget > 0 ? int(historyBudget / 16) : 0;
-    if (historyTarget < 96)
-        historyTarget = 96;
-    if (historyTarget > 2048)
-        historyTarget = 2048;
-    int shrinkTarget = historyTarget - 64;
-    if (shrinkTarget < 64)
-        shrinkTarget = historyTarget / 2;
+    int historyTarget = maxContextLines + 32;
+    if (historyTarget < 64)
+        historyTarget = 64;
+    if (historyTarget > 256)
+        historyTarget = 256;
+    int shrinkTarget = historyTarget - 16;
     if (shrinkTarget < 32)
         shrinkTarget = 32;
     const uint historyTargetCount = historyTarget > 0 ? uint(historyTarget) : 0;
@@ -764,22 +730,18 @@ string Translate(string Text, string &in SrcLang, string &in DstLang) {
     string targetLabel = targetLangCode;
 
     string systemMsg =
-        "You are an expert subtitle translate tool with a deep understanding of both language and culture. "
-        "Based on contextual clues, you provide translations that capture not only the literal meaning but also the nuanced metaphors, euphemisms, and cultural symbols embedded in the dialogue. "
-        "Your translations reflect the intended tone and cultural context, ensuring that every subtle reference and idiomatic expression is accurately conveyed. "
-        "I will provide you with relevant context when available; never echo that context in the output.\n\n"
-        "Rules:\n"
-        "1. Output the translation only.\n"
-        "2. Do NOT output extra comments or explanations.\n"
-        "3. Do NOT use any special characters or formatting in the translation.\n\n"
+        "You are a subtitle translator. "
+        "Translate ONLY the text inside <CURRENT> into " + targetLabel + ". "
+        "The text inside <CONTEXT> is for understanding only and MUST NOT be translated, repeated, summarized, or mentioned. "
+        "Output only the translation of <CURRENT>. No explanations.\n"
         "Source language: " + sourceLabel + "\n"
         "Target language: " + targetLabel + "\n";
 
+    string userMsg = "";
     if (context != "") {
-        systemMsg += "\nSubtitle context (older to newer):\n" + context + "\n\nDo not translate or repeat any context entries.";
+        userMsg += "<CONTEXT>\n" + context + "\n</CONTEXT>\n\n";
     }
-
-    string userMsg = Text;
+    userMsg += "<CURRENT>\n" + Text + "\n</CURRENT>";
 
     bool isOpenAIOfficial = IsOpenAIOfficialApiUrl(GPT_apiUrl);
     bool isGeminiApi = IsGeminiApiUrl(GPT_apiUrl);
@@ -831,7 +793,7 @@ string Translate(string Text, string &in SrcLang, string &in DstLang) {
             string responsesUrl = DeriveResponsesUrl(GPT_apiUrl);
             string cacheFailure = "";
             if (responsesUrl != "") {
-                translation = TranslateWithResponses(responsesUrl, headers, GPT_selected_model, systemMsg, Text, promptCacheKey, promptCacheRetention, cacheFailure);
+                translation = TranslateWithResponses(responsesUrl, headers, GPT_selected_model, systemMsg, userMsg, promptCacheKey, promptCacheRetention, cacheFailure);
             } else {
                 cacheFailure = "Unable to resolve responses endpoint from current API URL.";
             }
@@ -1144,12 +1106,12 @@ string ExecuteSimple(const string &in url, const string &in headers, const strin
 string BuildResponsesPayload(
     const string &in modelName,
     const string &in systemMsg,
-    const string &in subtitleText,
+    const string &in userMsg,
     const string &in promptCacheKey,
     const string &in promptCacheRetention
 ) {
     string escapedSystem = JsonEscape(systemMsg);
-    string escapedSubtitle = JsonEscape(subtitleText);
+    string escapedUser = JsonEscape(userMsg);
     string payload = "{\"model\":\"" + JsonEscape(modelName) + "\"";
     string cacheKey = promptCacheKey.Trim();
     if (cacheKey != "")
@@ -1159,7 +1121,7 @@ string BuildResponsesPayload(
         payload += ",\"prompt_cache_retention\":\"" + JsonEscape(retention) + "\"";
     payload += ",\"input\":[";
     payload += "{\"role\":\"system\",\"content\":[{\"type\":\"input_text\",\"text\":\"" + escapedSystem + "\"}]}";
-    payload += ",{\"role\":\"user\",\"content\":[{\"type\":\"input_text\",\"text\":\"" + escapedSubtitle + "\"}]}";
+    payload += ",{\"role\":\"user\",\"content\":[{\"type\":\"input_text\",\"text\":\"" + escapedUser + "\"}]}";
     payload += "]}";
     return payload;
 }
@@ -1199,12 +1161,12 @@ string TranslateWithResponses(
     const string &in headers,
     const string &in modelName,
     const string &in systemMsg,
-    const string &in subtitleText,
+    const string &in userMsg,
     const string &in promptCacheKey,
     const string &in promptCacheRetention,
     string &out failureReason
 ) {
-    string requestData = BuildResponsesPayload(modelName, systemMsg, subtitleText, promptCacheKey, promptCacheRetention);
+    string requestData = BuildResponsesPayload(modelName, systemMsg, userMsg, promptCacheKey, promptCacheRetention);
     string response = ExecuteSimple(responsesUrl, headers, requestData);
     if (response == "") {
         failureReason = "No response from Responses endpoint.";

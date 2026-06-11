@@ -1,6 +1,7 @@
 param(
     [string]$BuildDir = $PSScriptRoot,
-    [string]$ReleaseSuffix = ''
+    [string]$ReleaseSuffix = '',
+    [string]$VersionOverride = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -29,7 +30,7 @@ $projectRoot = (Resolve-Path (Join-Path $BuildDir '..')).Path
 $outputExe = Join-Path $projectRoot 'releases\latest\installer.exe'
 
 Write-Host 'Preparing generated Inno installer data...'
-$version = & (Join-Path $BuildDir 'prepare_installer.ps1') -ProjectRoot $projectRoot -BuildDir $BuildDir -ReleaseSuffix $ReleaseSuffix -PassThruVersion
+$version = & (Join-Path $BuildDir 'prepare_installer.ps1') -ProjectRoot $projectRoot -BuildDir $BuildDir -ReleaseSuffix $ReleaseSuffix -VersionOverride $VersionOverride -PassThruVersion
 if ([string]::IsNullOrWhiteSpace($version)) {
     throw 'Failed to determine plugin version.'
 }

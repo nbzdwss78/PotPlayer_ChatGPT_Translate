@@ -104,14 +104,10 @@ en.ContextTitle=Context Settings
 zh.ContextTitle=上下文设置
 en.ContextDescription=These settings apply only to the context-aware plugin.
 zh.ContextDescription=这些设置仅作用于带上下文的插件版本。
-en.ContextBudgetLabel=Context budget:
-zh.ContextBudgetLabel=上下文预算：
-en.ContextTruncLabel=When budget is exceeded:
-zh.ContextTruncLabel=超过预算时：
-en.ContextTruncDropOldest=Drop the oldest subtitles
-zh.ContextTruncDropOldest=丢弃最早的字幕
-en.ContextTruncSmartTrim=Smart trim the oldest subtitle
-zh.ContextTruncSmartTrim=智能裁剪最早的字幕
+en.ContextSubtitleCountLabel=Recent subtitle entries:
+zh.ContextSubtitleCountLabel=最近字幕条数：
+en.ContextSubtitleCountHint=Default is 3. Lower values are faster and reduce timeout risk.
+zh.ContextSubtitleCountHint=默认 3 条。数值越小越快，也越不容易超时。
 en.ContextCacheLabel=Context cache:
 zh.ContextCacheLabel=上下文缓存：
 en.ContextCacheAuto=Auto
@@ -204,10 +200,9 @@ var
   SmallModelCheck: TNewCheckBox;
   SkipVerifyButton: TNewButton;
   PurchaseButton: TNewButton;
-  ContextBudgetLabel: TNewStaticText;
-  ContextBudgetEdit: TNewEdit;
-  ContextTruncLabel: TNewStaticText;
-  ContextTruncCombo: TNewComboBox;
+  ContextSubtitleCountLabel: TNewStaticText;
+  ContextSubtitleCountEdit: TNewEdit;
+  ContextSubtitleCountHint: TNewStaticText;
   ContextCacheLabel: TNewStaticText;
   ContextCacheCombo: TNewComboBox;
   PromptCacheRetentionLabel: TNewStaticText;
@@ -709,11 +704,7 @@ begin
 
   if IsContextVariant then
   begin
-    ReplaceQuotedValue(Data, 'pre_context_token_budget', EscapeForAsString(Trim(ContextBudgetEdit.Text)));
-    if ContextTruncCombo.ItemIndex = 1 then
-      ReplaceQuotedValue(Data, 'pre_context_truncation_mode', 'smart_trim')
-    else
-      ReplaceQuotedValue(Data, 'pre_context_truncation_mode', 'drop_oldest');
+    ReplaceQuotedValue(Data, 'pre_context_subtitle_count', EscapeForAsString(Trim(ContextSubtitleCountEdit.Text)));
 
     if ContextCacheCombo.ItemIndex = 1 then
       ReplaceQuotedValue(Data, 'pre_context_cache_mode', 'off')
@@ -1202,38 +1193,28 @@ begin
   LabelGap := ScaleY(CustomPageLabelGapY);
   FieldGap := ScaleY(CustomPageFieldGapY);
 
-  ContextBudgetLabel := TNewStaticText.Create(ContextPage);
-  ContextBudgetLabel.Parent := ContextPage.Surface;
-  ContextBudgetLabel.Left := ContentLeft;
-  ContextBudgetLabel.Top := CurrentTop;
-  ContextBudgetLabel.Caption := CustomMessage('ContextBudgetLabel');
-  CurrentTop := CurrentTop + ContextBudgetLabel.Height + LabelGap;
+  ContextSubtitleCountLabel := TNewStaticText.Create(ContextPage);
+  ContextSubtitleCountLabel.Parent := ContextPage.Surface;
+  ContextSubtitleCountLabel.Left := ContentLeft;
+  ContextSubtitleCountLabel.Top := CurrentTop;
+  ContextSubtitleCountLabel.Caption := CustomMessage('ContextSubtitleCountLabel');
+  CurrentTop := CurrentTop + ContextSubtitleCountLabel.Height + LabelGap;
 
-  ContextBudgetEdit := TNewEdit.Create(ContextPage);
-  ContextBudgetEdit.Parent := ContextPage.Surface;
-  ContextBudgetEdit.Left := ContentLeft;
-  ContextBudgetEdit.Top := CurrentTop;
-  ContextBudgetEdit.Width := ContentWidth;
-  ContextBudgetEdit.Text := '6000';
-  CurrentTop := CurrentTop + ContextBudgetEdit.Height + FieldGap;
+  ContextSubtitleCountEdit := TNewEdit.Create(ContextPage);
+  ContextSubtitleCountEdit.Parent := ContextPage.Surface;
+  ContextSubtitleCountEdit.Left := ContentLeft;
+  ContextSubtitleCountEdit.Top := CurrentTop;
+  ContextSubtitleCountEdit.Width := ContentWidth;
+  ContextSubtitleCountEdit.Text := '3';
+  CurrentTop := CurrentTop + ContextSubtitleCountEdit.Height + LabelGap;
 
-  ContextTruncLabel := TNewStaticText.Create(ContextPage);
-  ContextTruncLabel.Parent := ContextPage.Surface;
-  ContextTruncLabel.Left := ContentLeft;
-  ContextTruncLabel.Top := CurrentTop;
-  ContextTruncLabel.Caption := CustomMessage('ContextTruncLabel');
-  CurrentTop := CurrentTop + ContextTruncLabel.Height + LabelGap;
-
-  ContextTruncCombo := TNewComboBox.Create(ContextPage);
-  ContextTruncCombo.Parent := ContextPage.Surface;
-  ContextTruncCombo.Left := ContentLeft;
-  ContextTruncCombo.Top := CurrentTop;
-  ContextTruncCombo.Width := ContentWidth;
-  ContextTruncCombo.Style := csDropDownList;
-  ContextTruncCombo.Items.Add(CustomMessage('ContextTruncDropOldest'));
-  ContextTruncCombo.Items.Add(CustomMessage('ContextTruncSmartTrim'));
-  ContextTruncCombo.ItemIndex := 0;
-  CurrentTop := CurrentTop + ContextTruncCombo.Height + FieldGap;
+  ContextSubtitleCountHint := TNewStaticText.Create(ContextPage);
+  ContextSubtitleCountHint.Parent := ContextPage.Surface;
+  ContextSubtitleCountHint.Left := ContentLeft;
+  ContextSubtitleCountHint.Top := CurrentTop;
+  ContextSubtitleCountHint.Width := ContentWidth;
+  ContextSubtitleCountHint.Caption := CustomMessage('ContextSubtitleCountHint');
+  CurrentTop := CurrentTop + ContextSubtitleCountHint.Height + FieldGap;
 
   ContextCacheLabel := TNewStaticText.Create(ContextPage);
   ContextCacheLabel.Parent := ContextPage.Surface;
@@ -1409,7 +1390,7 @@ begin
   end
   else if Assigned(ContextPage) and (CurPageID = ContextPage.ID) then
   begin
-    Result := IsNonNegativeIntegerText(Trim(ContextBudgetEdit.Text));
+    Result := IsNonNegativeIntegerText(Trim(ContextSubtitleCountEdit.Text));
     if not Result then
       MsgBox(CustomMessage('InvalidNumber'), mbError, MB_OK);
   end

@@ -1,16 +1,24 @@
 import subprocess
 import os
 import re
+import argparse
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--version', default='')
+args = parser.parse_args()
 
 # Get version from git
-try:
-    version = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).decode('utf-8').strip()
-    if version.startswith('v'):
-        version = version[1:]
-except Exception as e:
-    print(f"Could not get version from git: {e}")
-    # Fallback to a predefined version or exit
-    version = "1.9.2" # Fallback
+if args.version.strip():
+    version = args.version.strip()
+else:
+    try:
+        version = subprocess.check_output(['git', 'describe', '--tags', '--abbrev=0']).decode('utf-8').strip()
+        if version.startswith('v'):
+            version = version[1:]
+    except Exception as e:
+        print(f"Could not get version from git: {e}")
+        # Fallback to a predefined version or exit
+        version = "1.9.4" # Fallback
 
 # Read installer.py
 with open('installer.py', 'r', encoding='utf-8') as f:

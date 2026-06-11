@@ -150,13 +150,14 @@
    >   - `retry1`：空回應時再嘗試一次
    >   - `retry2`：持續重試直到有回應（無延遲）
    >   - `retry3`：持續重試且每次都等待延遲
+   > - `context=3`：語境版本使用，表示發送最近 3 條歷史字幕；設為 `0` 則不發送歷史字幕
    > - `cache=auto` / `cache=off`：語境快取模式（僅語境版本適用；auto 不支援時會自動回退到 chat）
    > - `smallmodel=0` / `smallmodel=1`：啟用小模型模式（針對小模型最佳化的提示詞）
    > - `checkhallucination=0` / `checkhallucination=1`：啟用幻覺檢測（若翻譯長度 > 原文5倍則重試）
    >
    > 完整範例：
    > ```
-   > gpt-4.1-nano|https://api.openai.com/v1/chat/completions|nullkey|500|retry1|cache=auto|smallmodel=1|checkhallucination=1
+   > gpt-4.1-nano|https://api.openai.com/v1/chat/completions|nullkey|500|retry1|context=3|cache=auto|smallmodel=1|checkhallucination=1
    > ```
 
 2. **API Key：**
@@ -173,7 +174,7 @@
 
 格式如下：
 ```
-模型名稱|API 位址|nullkey（可選）|delay_ms（可選）|retryN（可選）|cache=auto/off（可選）|smallmodel=0/1（可選）|checkhallucination=0/1（可選）
+模型名稱|API 位址|nullkey（可選）|delay_ms（可選）|retryN（可選）|context=3（可選）|cache=auto/off（可選）|smallmodel=0/1（可選）|checkhallucination=0/1（可選）
 ```
 
 以下為已支援或可用的模型介面範例：
@@ -289,9 +290,9 @@ graph TD
     subgraph ContextLogic [上下文處理]
         direction TB
         ContextMode -- "無上下文版" --> NoContextPrompt[無上下文]
-        ContextMode -- "帶上下文版" --> CalcBudget[計算 Token 預算]
-        CalcBudget --> TrimHist["裁剪歷史\n(丟棄舊的 / 智能裁剪)"]
-        TrimHist --> BuildBlock[構建上下文塊]
+        ContextMode -- "帶上下文版" --> ReadCount[讀取字幕條數設定]
+        ReadCount --> TrimHist[保留最近歷史字幕]
+        TrimHist --> BuildBlock["構建上下文塊\n最多配置的最近條數"]
     end
 
     %% --- Prompt Engineering ---
@@ -300,8 +301,8 @@ graph TD
         BuildBlock --> SmallModel{啟用小模型模式?}
         NoContextPrompt --> SmallModel
 
-        SmallModel -- 是 --> StrictPrompt[System: 身份 + 上下文 + 指令\nUser: 僅字幕原文]
-        SmallModel -- 否 --> StdPrompt[System: 身份 + 上下文\nUser: 指令 + 字幕原文]
+        SmallModel -- 是 --> StrictPrompt["System: 翻譯指令\nUser: &lt;CONTEXT&gt;/&lt;CURRENT&gt; 邊界"]
+        SmallModel -- 否 --> StdPrompt["System: 翻譯指令\nUser: &lt;CONTEXT&gt;/&lt;CURRENT&gt; 邊界"]
 
         StrictPrompt --> EscapeJSON[JSON 字串轉義]
         StdPrompt --> EscapeJSON

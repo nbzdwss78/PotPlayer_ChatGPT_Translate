@@ -16,7 +16,7 @@ from openai import OpenAI
 import win32com.client
 from PyQt6 import QtWidgets, QtCore, QtGui
 
-PLUGIN_VERSION = "1.9.2"
+PLUGIN_VERSION = "1.9.4"
 
 # ========= Helpers for bundled resources =========
 
@@ -313,7 +313,7 @@ def generate_uninstaller(uninstall_bat_path, files_to_delete, reg_key):
         f.write("\nexit\n")
 
 def apply_preconfig(file_path, api_key, model, api_base, delay_ms, retry_mode, debug_mode,
-                    check_hallucination=None, context_budget=None, context_truncation=None, context_cache_mode=None,
+                    check_hallucination=None, context_subtitle_count=None, context_cache_mode=None,
                     prompt_cache_retention=None, gemini_cached_content=None,
                     small_model=False, token_limits_json=None):
     try:
@@ -331,10 +331,8 @@ def apply_preconfig(file_path, api_key, model, api_base, delay_ms, retry_mode, d
         if check_hallucination is not None:
             retry_value = "1" if str(check_hallucination) in ("1", "true", "True", "on", "yes") else "0"
             data = re.sub(r'pre_check_hallucination\s*=\s*".*?"', f'pre_check_hallucination = "{retry_value}"', data)
-        if context_budget is not None:
-            data = re.sub(r'pre_context_token_budget\s*=\s*".*?"', f'pre_context_token_budget = "{context_budget}"', data)
-        if context_truncation is not None:
-            data = re.sub(r'pre_context_truncation_mode\s*=\s*".*?"', f'pre_context_truncation_mode = "{context_truncation}"', data)
+        if context_subtitle_count is not None:
+            data = re.sub(r'pre_context_subtitle_count\s*=\s*".*?"', f'pre_context_subtitle_count = "{context_subtitle_count}"', data)
         if context_cache_mode is not None:
             cache_value = str(context_cache_mode)
             data = re.sub(r'pre_context_cache_mode\s*=\s*".*?"',
@@ -437,7 +435,7 @@ class InstallThread(QtCore.QThread):
         self._loop = None
         return ans
 
-    def __init__(self, install_dir, versions, script_dir, language, api_key, model, api_base, delay_ms, retry_mode, debug_mode, check_hallucination, context_budget, context_truncation, context_cache_mode, prompt_cache_retention, gemini_cached_content, small_model):
+    def __init__(self, install_dir, versions, script_dir, language, api_key, model, api_base, delay_ms, retry_mode, debug_mode, check_hallucination, context_subtitle_count, context_cache_mode, prompt_cache_retention, gemini_cached_content, small_model):
         super().__init__()
         self.install_dir = install_dir
         self.versions = list(versions) if versions else []
@@ -450,8 +448,7 @@ class InstallThread(QtCore.QThread):
         self.retry_mode = retry_mode
         self.debug_mode = debug_mode
         self.check_hallucination = check_hallucination
-        self.context_budget = context_budget
-        self.context_truncation = context_truncation
+        self.context_subtitle_count = context_subtitle_count
         self.context_cache_mode = context_cache_mode
         self.prompt_cache_retention = prompt_cache_retention
         self.gemini_cached_content = gemini_cached_content
@@ -505,8 +502,7 @@ class InstallThread(QtCore.QThread):
                     if dest_name.lower().endswith(".as"):
                         apply_preconfig(dest_path, self.api_key, self.model, self.api_base, self.delay_ms, self.retry_mode, self.debug_mode,
                                         self.check_hallucination,
-                                        str(self.context_budget) if variant == "with_context" else None,
-                                        self.context_truncation if variant == "with_context" else None,
+                                        str(self.context_subtitle_count) if variant == "with_context" else None,
                                         self.context_cache_mode if variant == "with_context" else None,
                                         self.prompt_cache_retention if variant == "with_context" else None,
                                         self.gemini_cached_content if variant == "with_context" else None,
@@ -540,8 +536,7 @@ class InstallThread(QtCore.QThread):
                         if new_name.lower().endswith(".as"):
                             apply_preconfig(new_dest_path, self.api_key, self.model, self.api_base, self.delay_ms, self.retry_mode, self.debug_mode,
                                             self.check_hallucination,
-                                            str(self.context_budget) if variant == "with_context" else None,
-                                            self.context_truncation if variant == "with_context" else None,
+                                            str(self.context_subtitle_count) if variant == "with_context" else None,
                                             self.context_cache_mode if variant == "with_context" else None,
                                             self.prompt_cache_retention if variant == "with_context" else None,
                                             self.gemini_cached_content if variant == "with_context" else None,
@@ -558,8 +553,7 @@ class InstallThread(QtCore.QThread):
                 if dest_name.lower().endswith(".as"):
                     apply_preconfig(dest_path, self.api_key, self.model, self.api_base, self.delay_ms, self.retry_mode, self.debug_mode,
                                     self.check_hallucination,
-                                    str(self.context_budget) if variant == "with_context" else None,
-                                    self.context_truncation if variant == "with_context" else None,
+                                    str(self.context_subtitle_count) if variant == "with_context" else None,
                                     self.context_cache_mode if variant == "with_context" else None,
                                     self.prompt_cache_retention if variant == "with_context" else None,
                                     self.gemini_cached_content if variant == "with_context" else None,
@@ -1046,26 +1040,23 @@ class ContextPage(QtWidgets.QWizardPage):
         self.wizard = wizard
         self.intro = QtWidgets.QLabel()
         self.intro.setWordWrap(True)
-        self.length_label = QtWidgets.QLabel()
-        self.length_spin = QtWidgets.QSpinBox()
-        self.length_spin.setRange(0, 200000)
-        self.length_spin.setSingleStep(500)
-        self.length_hint = QtWidgets.QLabel()
-        self.length_hint.setWordWrap(True)
-        self.trunc_label = QtWidgets.QLabel()
-        self.trunc_combo = QtWidgets.QComboBox()
+        self.count_label = QtWidgets.QLabel()
+        self.count_spin = QtWidgets.QSpinBox()
+        self.count_spin.setRange(0, 20)
+        self.count_spin.setSingleStep(1)
+        self.count_hint = QtWidgets.QLabel()
+        self.count_hint.setWordWrap(True)
         self.cache_label = QtWidgets.QLabel()
         self.cache_combo = QtWidgets.QComboBox()
         self.cache_hint = QtWidgets.QLabel()
         self.cache_hint.setWordWrap(True)
         form = QtWidgets.QFormLayout()
-        form.addRow(self.length_label, self.length_spin)
-        form.addRow(self.trunc_label, self.trunc_combo)
+        form.addRow(self.count_label, self.count_spin)
         form.addRow(self.cache_label, self.cache_combo)
         layout = QtWidgets.QVBoxLayout()
         layout.addWidget(self.intro)
         layout.addLayout(form)
-        layout.addWidget(self.length_hint)
+        layout.addWidget(self.count_hint)
         layout.addWidget(self.cache_hint)
         self.setLayout(layout)
 
@@ -1077,25 +1068,15 @@ class ContextPage(QtWidgets.QWizardPage):
             return
         self.setTitle(s["context_title"])
         self.intro.setText(s["context_intro"])
-        self.length_label.setText(s["context_length_label"])
-        suffix = s.get("context_length_suffix", "")
+        self.count_label.setText(s["context_count_label"])
+        suffix = s.get("context_count_suffix", "")
         if suffix:
-            self.length_spin.setSuffix(f" {suffix}")
+            self.count_spin.setSuffix(f" {suffix}")
         else:
-            self.length_spin.setSuffix("")
-        self.length_spin.setSpecialValueText(s.get("context_length_auto", "Auto"))
-        self.length_spin.setValue(int(self.wizard.context_token_budget))
-        self.length_hint.setText(s["context_length_hint"])
-        self.trunc_label.setText(s["context_trunc_label"])
-        self.trunc_combo.clear()
-        self.trunc_combo.addItem(s["context_trunc_drop_oldest"], "drop_oldest")
-        self.trunc_combo.addItem(s["context_trunc_smart_trim"], "smart_trim")
-        current_mode = self.wizard.context_truncation_mode or "drop_oldest"
-        index = self.trunc_combo.findData(current_mode)
-        if index != -1:
-            self.trunc_combo.setCurrentIndex(index)
-        else:
-            self.trunc_combo.setCurrentIndex(0)
+            self.count_spin.setSuffix("")
+        self.count_spin.setSpecialValueText(s.get("context_count_zero", "No context"))
+        self.count_spin.setValue(int(self.wizard.context_subtitle_count))
+        self.count_hint.setText(s["context_count_hint"])
         self.cache_label.setText(s["context_cache_label"])
         self.cache_combo.clear()
         self.cache_combo.addItem(s["context_cache_auto"], "auto")
@@ -1111,10 +1092,7 @@ class ContextPage(QtWidgets.QWizardPage):
     def validatePage(self):
         if not self.wizard.has_context_variant:
             return True
-        self.wizard.context_token_budget = self.length_spin.value()
-        data = self.trunc_combo.currentData()
-        if data:
-            self.wizard.context_truncation_mode = data
+        self.wizard.context_subtitle_count = self.count_spin.value()
         cache_data = self.cache_combo.currentData()
         if cache_data:
             self.wizard.context_cache_mode = cache_data
@@ -1180,8 +1158,7 @@ class ProgressPage(QtWidgets.QWizardPage):
             self.wizard.retry_mode,
             self.wizard.debug_mode,
             self.wizard.check_hallucination,
-            self.wizard.context_token_budget,
-            self.wizard.context_truncation_mode,
+            self.wizard.context_subtitle_count,
             self.wizard.context_cache_mode,
             self.wizard.prompt_cache_retention,
             self.wizard.gemini_cached_content,
@@ -1271,8 +1248,7 @@ class InstallerWizard(QtWidgets.QWizard):
         self.retry_mode = 1
         self.debug_mode = False
         self.check_hallucination = False
-        self.context_token_budget = 6000
-        self.context_truncation_mode = "drop_oldest"
+        self.context_subtitle_count = 3
         self.context_cache_mode = "auto"
         self.prompt_cache_retention = "24h"
         self.gemini_cached_content = ""

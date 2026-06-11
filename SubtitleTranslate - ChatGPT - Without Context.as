@@ -13,7 +13,7 @@ string GetTitle() {
 
 // The version number will be replaced during the installation process
 string GetVersion() {
-    return "1.9.2-wc";
+    return "1.9.4-wc";
 }
 
 string GetDesc() {

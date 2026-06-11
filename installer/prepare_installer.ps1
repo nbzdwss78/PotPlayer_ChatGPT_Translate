@@ -2,6 +2,7 @@ param(
     [string]$ProjectRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
     [string]$BuildDir = $PSScriptRoot,
     [string]$ReleaseSuffix = '',
+    [string]$VersionOverride = '',
     [switch]$PassThruVersion
 )
 
@@ -38,7 +39,7 @@ function Escape-PascalString {
 $generatedDir = Join-Path $BuildDir 'generated'
 New-Item -ItemType Directory -Path $generatedDir -Force | Out-Null
 
-$version = Get-PluginVersion -Root $ProjectRoot
+$version = if ([string]::IsNullOrWhiteSpace($VersionOverride)) { Get-PluginVersion -Root $ProjectRoot } else { $VersionOverride.Trim() }
 $releaseSuffixNormalized = [string]$ReleaseSuffix
 if (-not [string]::IsNullOrWhiteSpace($releaseSuffixNormalized)) {
     if (-not $releaseSuffixNormalized.StartsWith('-')) {

@@ -291,7 +291,7 @@ You can append optional parameters after the model and API URL. Each option is s
 Full format:
 
 ```text
-ModelName|API Base URL|nullkey|delay_ms|retryN|cache=auto/off|smallmodel=0/1|checkhallucination=0/1
+ModelName|API Base URL|nullkey|delay_ms|retryN|context=3|cache=auto/off|smallmodel=0/1|checkhallucination=0/1
 ```
 
 Available options:
@@ -304,6 +304,7 @@ Available options:
 | `retry1` | Retry once when the response is empty. |
 | `retry2` | Keep retrying until a response is returned, without delay. |
 | `retry3` | Keep retrying until a response is returned, with delay before every attempt. |
+| `context=3` | Context version only. Number of recent subtitle entries to send as context. Use `0` to send no previous subtitles. |
 | `cache=auto` | Enable context cache mode when available. Context version only. Falls back to normal chat mode if unsupported. |
 | `cache=off` | Disable context cache mode. |
 | `smallmodel=0` | Disable small-model prompt mode. |
@@ -314,7 +315,7 @@ Available options:
 Example with several options:
 
 ```text
-gpt-4.1-nano|https://api.openai.com/v1/chat/completions|nullkey|500|retry1|cache=auto|smallmodel=1|checkhallucination=1
+gpt-4.1-nano|https://api.openai.com/v1/chat/completions|nullkey|500|retry1|context=3|cache=auto|smallmodel=1|checkhallucination=1
 ```
 
 ### API Key
@@ -342,7 +343,7 @@ These are examples only. Actual availability depends on your API provider, accou
 Use this general format:
 
 ```text
-ModelName|API Base URL|nullkey(optional)|delay_ms(optional)|retryN(optional)|cache=auto/off(optional)|smallmodel=0/1(optional)|checkhallucination=0/1(optional)
+ModelName|API Base URL|nullkey(optional)|delay_ms(optional)|retryN(optional)|context=3(optional)|cache=auto/off(optional)|smallmodel=0/1(optional)|checkhallucination=0/1(optional)
 ```
 
 ### OpenAI-Compatible Examples
@@ -501,9 +502,9 @@ graph TD
     subgraph ContextLogic [Context Processing]
         direction TB
         ContextMode -- "Without Context" --> NoContextPrompt[No Context]
-        ContextMode -- "With Context" --> CalcBudget[Calculate Token Budget]
-        CalcBudget --> TrimHist[Trim History]
-        TrimHist --> BuildBlock[Build Context Block]
+        ContextMode -- "With Context" --> ReadCount[Read Subtitle Count Setting]
+        ReadCount --> TrimHist[Keep Recent History]
+        TrimHist --> BuildBlock["Build Context Block\nup to configured recent lines"]
     end
 
     subgraph PromptEng [Prompt Construction]
@@ -511,8 +512,8 @@ graph TD
         BuildBlock --> SmallModel{Small Model Mode?}
         NoContextPrompt --> SmallModel
 
-        SmallModel -- Yes --> StrictPrompt[System Prompt + Context + Instruction]
-        SmallModel -- No --> StdPrompt[System Prompt + Context + User Text]
+        SmallModel -- Yes --> StrictPrompt[System Instructions + User &lt;CONTEXT&gt;/&lt;CURRENT&gt; Tags]
+        SmallModel -- No --> StdPrompt[System Instructions + User &lt;CONTEXT&gt;/&lt;CURRENT&gt; Tags]
 
         StrictPrompt --> EscapeJSON[Escape JSON Strings]
         StdPrompt --> EscapeJSON

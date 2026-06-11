@@ -1,18 +1,19 @@
-# 📢 PotPlayer ChatGPT Translate v1.9.3
+# 📢 PotPlayer ChatGPT Translate v1.9.4
 
 ## 📦 下载地址 / Download
 
 | 渠道 (Channel) | 下载链接 (Download Link) |
 | --- | --- |
-| **GitHub (Global)** | [👉 Download Latest Installer (v1.9.3)](https://github.com/Felix3322/PotPlayer_ChatGPT_Translate/releases/latest) |
+| **GitHub (Global)** | [👉 Download Latest Installer (v1.9.4)](https://github.com/Felix3322/PotPlayer_ChatGPT_Translate/releases/latest) |
 | **Gitee (China)** | [🚀 国内镜像快速下载](https://gitee.com/felix3322/PotPlayer_ChatGPT_Translate/raw/master/releases/latest/installer.exe) |
 
 ---
 
 ## 🔧 更新内容 / Update Highlights
 
-*   **[发布] 重新生成 Python 安装包**：基于当前 `master` 重新制作 PyInstaller 版安装器，并发布为最新 GitHub Release。
-*   **[修复] 无上下文翻译请求构造**：修复 `SubtitleTranslate - ChatGPT - Without Context.as` 中翻译请求误引用测试消息转义变量的问题，避免运行时出现未定义变量相关错误。
+*   **[修复] 上下文翻译稳定性**：将旧的 token/字数预算上下文彻底替换为“最近字幕条数”上下文，默认发送最近 3 条字幕，并使用新的 `gpt_context_subtitle_count` 配置名避免旧版本配置冲突。
+*   **[优化] 提示词边界**：使用 `<CONTEXT>` / `<CURRENT>` 明确分离上下文与当前字幕，减少请求耗时和偶发输出原文的问题（issue #92）。
+*   **[发布] 多安装包构建**：同时生成 Python 和原生 C++ 安装包，并发布为最新 GitHub Release。
 
 ---
 

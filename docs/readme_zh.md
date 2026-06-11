@@ -149,13 +149,14 @@
    >   - `retry1`：空响应时再尝试一次
    >   - `retry2`：持续重试直到有响应（无延迟）
    >   - `retry3`：持续重试且每次都等待延迟
+   > - `context=3`：上下文版本使用，表示发送最近 3 条历史字幕；设为 `0` 则不发送历史字幕
    > - `cache=auto` / `cache=off`：上下文缓存模式（仅上下文版本适用；auto 不支持时自动回退到 chat）
    > - `smallmodel=0` / `smallmodel=1`：启用小模型模式（针对小模型优化的提示词）
    > - `checkhallucination=0` / `checkhallucination=1`：启用幻觉检测（若翻译长度 > 原文5倍则重试）
    >
    > 完整示例：
    > ```
-   > gpt-4.1-nano|https://api.openai.com/v1/chat/completions|nullkey|500|retry1|cache=auto|smallmodel=1|checkhallucination=1
+   > gpt-4.1-nano|https://api.openai.com/v1/chat/completions|nullkey|500|retry1|context=3|cache=auto|smallmodel=1|checkhallucination=1
    > ```
 
 2. **API Key：**
@@ -172,7 +173,7 @@
 
 使用格式如下：
 ```
-模型名称|API 地址|nullkey（可选）|delay_ms（可选）|retryN（可选）|cache=auto/off（可选）|smallmodel=0/1（可选）|checkhallucination=0/1（可选）
+模型名称|API 地址|nullkey（可选）|delay_ms（可选）|retryN（可选）|context=3（可选）|cache=auto/off（可选）|smallmodel=0/1（可选）|checkhallucination=0/1（可选）
 ```
 
 以下是已支持或可用的模型接口示例：
@@ -282,9 +283,9 @@ graph TD
     subgraph ContextLogic [上下文处理]
         direction TB
         ContextMode -- "无上下文版" --> NoContextPrompt[无上下文]
-        ContextMode -- "带上下文版" --> CalcBudget[计算 Token 预算]
-        CalcBudget --> TrimHist["裁剪历史\n(丢弃旧的 / 智能裁剪)"]
-        TrimHist --> BuildBlock[构建上下文块]
+        ContextMode -- "带上下文版" --> ReadCount[读取字幕条数设置]
+        ReadCount --> TrimHist[保留最近历史字幕]
+        TrimHist --> BuildBlock["构建上下文块\n最多配置的最近条数"]
     end
 
     %% --- Prompt Engineering ---
@@ -293,8 +294,8 @@ graph TD
         BuildBlock --> SmallModel{启用小模型模式?}
         NoContextPrompt --> SmallModel
 
-        SmallModel -- 是 --> StrictPrompt[System: 身份 + 上下文 + 指令\nUser: 仅字幕原文]
-        SmallModel -- 否 --> StdPrompt[System: 身份 + 上下文\nUser: 指令 + 字幕原文]
+        SmallModel -- 是 --> StrictPrompt["System: 翻译指令\nUser: &lt;CONTEXT&gt;/&lt;CURRENT&gt; 边界"]
+        SmallModel -- 否 --> StdPrompt["System: 翻译指令\nUser: &lt;CONTEXT&gt;/&lt;CURRENT&gt; 边界"]
 
         StrictPrompt --> EscapeJSON[JSON 字符串转义]
         StdPrompt --> EscapeJSON

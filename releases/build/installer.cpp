@@ -88,8 +88,7 @@ struct WizardState {
     int retry_mode = 1;
     bool debug_mode = false;
     bool check_hallucination = false;
-    int context_token_budget = 6000;
-    std::wstring context_truncation_mode = L"drop_oldest";
+    int context_subtitle_count = 3;
     std::wstring context_cache_mode = L"auto";
     std::wstring prompt_cache_retention = L"24h";
     std::wstring gemini_cached_content;
@@ -961,8 +960,7 @@ bool ApplyPreconfig(const std::filesystem::path& file_path,
                     int retry_mode,
                     bool debug_mode,
                     const std::optional<std::wstring>& check_hallucination,
-                    const std::optional<std::wstring>& context_budget,
-                    const std::optional<std::wstring>& context_truncation,
+                    const std::optional<std::wstring>& context_subtitle_count,
                     const std::optional<std::wstring>& context_cache_mode,
                     const std::optional<std::wstring>& prompt_cache_retention,
                     const std::optional<std::wstring>& gemini_cached_content,
@@ -987,11 +985,8 @@ bool ApplyPreconfig(const std::filesystem::path& file_path,
                            (*check_hallucination == L"1" || *check_hallucination == L"true" || *check_hallucination == L"True" ||
                             *check_hallucination == L"on" || *check_hallucination == L"yes") ? "1" : "0");
     }
-    if (context_budget.has_value()) {
-        ReplaceQuotedValue(data, "pre_context_token_budget", WideToUtf8(*context_budget));
-    }
-    if (context_truncation.has_value()) {
-        ReplaceQuotedValue(data, "pre_context_truncation_mode", WideToUtf8(*context_truncation));
+    if (context_subtitle_count.has_value()) {
+        ReplaceQuotedValue(data, "pre_context_subtitle_count", WideToUtf8(*context_subtitle_count));
     }
     if (context_cache_mode.has_value()) {
         ReplaceQuotedValue(data, "pre_context_cache_mode", WideToUtf8(*context_cache_mode));
@@ -1130,8 +1125,7 @@ InstallStatus InstallVariant(const InstallThreadData& job, const std::wstring& v
                     job.state.retry_mode,
                     job.state.debug_mode,
                     std::make_optional(job.state.check_hallucination ? std::wstring(L"1") : std::wstring(L"0")),
-                    variant == kVariantWithContext ? std::make_optional(std::to_wstring(job.state.context_token_budget)) : std::nullopt,
-                    variant == kVariantWithContext ? std::make_optional(job.state.context_truncation_mode) : std::nullopt,
+                    variant == kVariantWithContext ? std::make_optional(std::to_wstring(job.state.context_subtitle_count)) : std::nullopt,
                     variant == kVariantWithContext ? std::make_optional(job.state.context_cache_mode) : std::nullopt,
                     variant == kVariantWithContext ? std::make_optional(job.state.prompt_cache_retention) : std::nullopt,
                     variant == kVariantWithContext ? std::make_optional(job.state.gemini_cached_content) : std::nullopt,
@@ -1749,9 +1743,9 @@ INT_PTR CALLBACK ContextPageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     switch (message) {
     case WM_INITDIALOG: {
         InitPageDialog(hwnd, lParam);
-        SendMessageW(GetDlgItem(hwnd, IDC_CONTEXT_LENGTH_SPIN), UDM_SETRANGE32, 0, 200000);
-        UDACCEL accel{ 0, 500 };
-        SendMessageW(GetDlgItem(hwnd, IDC_CONTEXT_LENGTH_SPIN), UDM_SETACCEL, 1, reinterpret_cast<LPARAM>(&accel));
+        SendMessageW(GetDlgItem(hwnd, IDC_CONTEXT_COUNT_SPIN), UDM_SETRANGE32, 0, 20);
+        UDACCEL accel{ 0, 1 };
+        SendMessageW(GetDlgItem(hwnd, IDC_CONTEXT_COUNT_SPIN), UDM_SETACCEL, 1, reinterpret_cast<LPARAM>(&accel));
         return TRUE;
     }
     case WM_CTLCOLORDLG:
@@ -1766,18 +1760,11 @@ INT_PTR CALLBACK ContextPageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             const auto& s = StringsForLanguage(ctx->state.language);
             SetText(hwnd, IDC_CONTEXT_TITLE, s.at(L"context_title"));
             SetText(hwnd, IDC_CONTEXT_INTRO, ToWindowsNewlines(s.at(L"context_intro")));
-            SetText(hwnd, IDC_CONTEXT_LENGTH_LABEL, s.at(L"context_length_label"));
-            SetText(hwnd, IDC_CONTEXT_LENGTH_HINT, ToWindowsNewlines(s.at(L"context_length_hint")));
-            SetText(hwnd, IDC_CONTEXT_TRUNC_LABEL, s.at(L"context_trunc_label"));
+            SetText(hwnd, IDC_CONTEXT_COUNT_LABEL, s.at(L"context_count_label"));
+            SetText(hwnd, IDC_CONTEXT_COUNT_HINT, ToWindowsNewlines(s.at(L"context_count_hint")));
             SetText(hwnd, IDC_CONTEXT_CACHE_LABEL, s.at(L"context_cache_label"));
             SetText(hwnd, IDC_CONTEXT_CACHE_HINT, ToWindowsNewlines(s.at(L"context_cache_hint")));
-            SetIntText(hwnd, IDC_CONTEXT_LENGTH_EDIT, ctx->state.context_token_budget);
-
-            HWND trunc_combo = GetDlgItem(hwnd, IDC_CONTEXT_TRUNC_COMBO);
-            ComboBox_ResetContent(trunc_combo);
-            ComboBox_AddString(trunc_combo, s.at(L"context_trunc_drop_oldest").c_str());
-            ComboBox_AddString(trunc_combo, s.at(L"context_trunc_smart_trim").c_str());
-            ComboBox_SetCurSel(trunc_combo, ctx->state.context_truncation_mode == L"smart_trim" ? 1 : 0);
+            SetIntText(hwnd, IDC_CONTEXT_COUNT_EDIT, ctx->state.context_subtitle_count);
 
             HWND cache_combo = GetDlgItem(hwnd, IDC_CONTEXT_CACHE_COMBO);
             ComboBox_ResetContent(cache_combo);
@@ -1789,9 +1776,7 @@ INT_PTR CALLBACK ContextPageProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
             return TRUE;
         }
         if (hdr->code == PSN_WIZNEXT) {
-            ctx->state.context_token_budget = GetIntText(hwnd, IDC_CONTEXT_LENGTH_EDIT, ctx->state.context_token_budget);
-            ctx->state.context_truncation_mode =
-                ComboBox_GetCurSel(GetDlgItem(hwnd, IDC_CONTEXT_TRUNC_COMBO)) == 1 ? L"smart_trim" : L"drop_oldest";
+            ctx->state.context_subtitle_count = GetIntText(hwnd, IDC_CONTEXT_COUNT_EDIT, ctx->state.context_subtitle_count);
             ctx->state.context_cache_mode =
                 ComboBox_GetCurSel(GetDlgItem(hwnd, IDC_CONTEXT_CACHE_COMBO)) == 0 ? L"auto" : L"off";
             return TRUE;

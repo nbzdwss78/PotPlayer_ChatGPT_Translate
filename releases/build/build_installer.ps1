@@ -1,6 +1,7 @@
 param(
     [string]$BuildDir = $PSScriptRoot,
-    [string]$ReleaseSuffix = ''
+    [string]$ReleaseSuffix = '',
+    [string]$VersionOverride = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -28,7 +29,7 @@ if (-not (Test-Path $vcvars)) {
 }
 
 Write-Host 'Preparing generated installer headers...'
-& (Join-Path $BuildDir 'prepare_installer.ps1') -ProjectRoot $projectRoot -BuildDir $BuildDir -ReleaseSuffix $ReleaseSuffix
+& (Join-Path $BuildDir 'prepare_installer.ps1') -ProjectRoot $projectRoot -BuildDir $BuildDir -ReleaseSuffix $ReleaseSuffix -VersionOverride $VersionOverride
 if ($LASTEXITCODE -ne 0) {
     throw 'Header generation failed.'
 }
