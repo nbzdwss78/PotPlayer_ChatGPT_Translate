@@ -11,6 +11,20 @@
   <a href="https://github.com/Felix3322/PotPlayer_ChatGPT_Translate/blob/master/README.md">English</a>
 </div>
 
+<a id="readme-top"></a>
+<div align="center">
+
+<a href="https://doloffer.com/friend/Ag2kFHdx" target="_blank">
+  <img width="500" alt="image" src="https://github.com/user-attachments/assets/92f77c88-68ba-42da-be7c-8dacdd3ca5cc" />
+</a>
+
+### [DolOffer - 一站式数字订阅充值平台](https://doloffer.com/friend/Ag2kFHdx)
+
+主营 GPT、Claude 等 AI 服务会员正版订阅充值。  
+💰 使用折扣码：**AI8888**  
+🚀 极速发货，售后无忧。
+</div>
+
 <div align="center">
   <h3 align="center">PotPlayer_ChatGPT_Translate 🚀</h3>
   <p align="center">
